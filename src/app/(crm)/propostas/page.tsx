@@ -41,18 +41,17 @@ export default async function Propostas(props: PageProps<"/propostas">) {
           <CartaoProposta key={p.id} proposta={p}>
             {p.status === "rascunho" && (
               <div className="alert alert-critical">
-                Estoque insuficiente quando a proposta foi criada. Depois da reposição, reavalie: ela passa pelas
-                mesmas regras de desconto.
+                Estoque insuficiente no momento da criação.
               </div>
             )}
             {p.status === "aguardando_aprovacao" && (
               <div className="alert alert-warning">
-                Aguardando a diretoria. <Link href="/aprovacoes">Ver fila de aprovações →</Link>
+                Aguardando a diretoria. <Link href="/aprovacoes">Ver aprovações</Link>
               </div>
             )}
             {p.status === "bloqueada" && (
               <div className="alert alert-critical">
-                Desconto acima do limite. Crie uma nova proposta com desconto menor ou negocie com a diretoria.
+                Desconto acima do limite da diretoria.
               </div>
             )}
             {p.status === "aceita" && p.bling_pedido_id && (
@@ -86,6 +85,11 @@ export default async function Propostas(props: PageProps<"/propostas">) {
                     Cliente recusou
                   </BotaoEnviar>
                 </AcaoForm>
+              )}
+              {(p.status === "bloqueada" || p.status === "recusada" || p.status === "perdida") && (
+                <Link className="btn btn-sm" href={`/propostas/nova?negociacao=${p.negociacoes.id}`}>
+                  Nova proposta
+                </Link>
               )}
               {p.status === "aceita" && !p.bling_pedido_id && (
                 <AcaoForm action={reenviarPedidoBling}>

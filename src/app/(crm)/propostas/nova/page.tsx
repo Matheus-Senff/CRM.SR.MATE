@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ESTAGIOS_ABERTOS, type Canal, type RegrasDesconto } from "@/lib/dominio";
 import { exigirUsuario } from "@/lib/sessao";
 import { FormProposta, type NegociacaoOpcao, type ProdutoOpcao } from "./form-proposta";
@@ -10,7 +11,7 @@ type ProdutoLinha = {
 };
 
 export default async function NovaProposta(props: PageProps<"/propostas/nova">) {
-  const { supabase } = await exigirUsuario();
+  const { supabase, perfil } = await exigirUsuario();
   const params = await props.searchParams;
   const negociacaoInicial = typeof params.negociacao === "string" ? params.negociacao : "";
 
@@ -44,7 +45,23 @@ export default async function NovaProposta(props: PageProps<"/propostas/nova">) 
   return (
     <>
       <h1 className="view-title">Nova proposta</h1>
-      {negociacoes?.length ? (
+      {!negociacoes?.length ? (
+        <div className="card empty-state">
+          <p>Nenhuma negociação em aberto.</p>
+          <Link className="btn btn-primary" href="/clientes">
+            Ir para clientes
+          </Link>
+        </div>
+      ) : !opcoes.some((p) => Object.keys(p.precos).length) ? (
+        <div className="card empty-state">
+          <p>Nenhum produto com preço cadastrado.</p>
+          {perfil.papel === "admin" && (
+            <Link className="btn btn-primary" href="/configuracoes">
+              Cadastrar preços
+            </Link>
+          )}
+        </div>
+      ) : (
         <FormProposta
           negociacoes={negociacoes}
           produtos={opcoes}
@@ -54,8 +71,6 @@ export default async function NovaProposta(props: PageProps<"/propostas/nova">) 
           }}
           negociacaoInicial={negociacaoInicial}
         />
-      ) : (
-        <div className="card empty-state">Nenhuma negociação em aberto.</div>
       )}
     </>
   );

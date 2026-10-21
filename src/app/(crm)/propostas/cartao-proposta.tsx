@@ -17,13 +17,13 @@ export type PropostaCompleta = {
   bling_pedido_id: number | null;
   bling_erro: string | null;
   created_at: string;
-  negociacoes: { titulo: string; empresas: { id: string; nome: string } };
+  negociacoes: { id: string; titulo: string; empresas: { id: string; nome: string } };
   proposta_itens: { quantidade: number; preco_unitario: number; total: number; produtos: { nome: string } }[];
 };
 
 export const SELECT_PROPOSTA = `id, numero, canal, desconto_pct, status, subtotal, desconto_valor, total, observacao,
   bling_pedido_id, bling_erro, created_at,
-  negociacoes!inner(titulo, empresas!inner(id, nome)),
+  negociacoes!inner(id, titulo, empresas!inner(id, nome)),
   proposta_itens(quantidade, preco_unitario, total, produtos!inner(nome))`;
 
 export function CartaoProposta({ proposta: p, children }: { proposta: PropostaCompleta; children?: ReactNode }) {

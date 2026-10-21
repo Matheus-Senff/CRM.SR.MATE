@@ -1126,3 +1126,6 @@ hr.sep {
     padding: 36px 26px 30px;
   }
 }
+.empty-state p {
+  margin: 0 0 16px;
+}
