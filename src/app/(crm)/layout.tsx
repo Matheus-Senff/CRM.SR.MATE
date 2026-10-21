@@ -1,3 +1,4 @@
+import { Logotipo } from "@/components/logo";
 import { Nav } from "@/components/nav";
 import { ROTULO_PAPEL } from "@/lib/dominio";
 import { exigirUsuario } from "@/lib/sessao";
@@ -14,8 +15,7 @@ export default async function CrmLayout({ children }: LayoutProps<"/">) {
     <div className="app">
       <aside className="sidebar">
         <div className="brand">
-          <div className="mark">Sr</div>
-          <div className="name">CRM SrMATE</div>
+          <Logotipo claro />
         </div>
         <Nav pendentes={count ?? 0} admin={perfil.papel === "admin"} />
         <div className="foot">
