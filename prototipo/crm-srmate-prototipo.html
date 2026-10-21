@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRM SrMATE — Protótipo (Fase 1 e 2)</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1: #fcfcfb;
+    --page-plane: #f9f9f7;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --gridline: #e1e0d9;
+    --baseline: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --success-text: #006300;
+    --series-1: #2a78d6;
+    --series-2: #eb6834;
+    --series-3: #1baf7a;
+    --seq-250: #86b6ef;
+    --seq-300: #6da7ec;
+    --seq-400: #3987e5;
+    --seq-500: #256abf;
+    --seq-600: #184f95;
+    --status-good: #0ca30c;
+    --status-warning: #fab219;
+    --status-serious: #ec835a;
+    --status-critical: #d03b3b;
+    --brand-strong: #234d2b;
+    --brand-soft: #2f6d3c;
+  }
+  [data-theme="dark"] {
+    color-scheme: dark;
+    --surface-1: #1a1a19;
+    --page-plane: #0d0d0d;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #898781;
+    --gridline: #2c2c2a;
+    --baseline: #383835;
+    --border: rgba(255,255,255,0.10);
+    --success-text: #0ca30c;
+    --series-1: #3987e5;
+    --series-2: #d95926;
+    --series-3: #199e70;
+    --brand-strong: #0f2913;
+    --brand-soft: #1b3f22;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; height:100%; }
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page-plane);
+    color: var(--text-primary);
+    font-size: 14px;
+  }
+  button { font-family: inherit; }
+  .app { display:flex; min-height:100vh; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 232px; flex-shrink:0;
+    background: linear-gradient(180deg, var(--brand-strong), var(--brand-soft));
+    color: #fff; display:flex; flex-direction:column; padding: 18px 0;
+  }
+  .sidebar .brand { padding: 0 20px 18px; display:flex; align-items:center; gap:10px; border-bottom:1px solid rgba(255,255,255,.12); margin-bottom: 10px;}
+  .sidebar .brand .mark { width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.15); display:flex;align-items:center;justify-content:center;font-size:16px;}
+  .sidebar .brand .name { font-weight:700; font-size:15px; line-height:1.2;}
+  .sidebar .brand .sub { font-size:11px; color:rgba(255,255,255,.65);}
+  .sidebar nav { display:flex; flex-direction:column; gap:2px; margin-top:6px;}
+  .sidebar nav button {
+    display:flex; align-items:center; gap:10px; background:none; border:none; color:rgba(255,255,255,.82);
+    padding:10px 20px; text-align:left; cursor:pointer; font-size:13.5px; border-left:3px solid transparent;
+  }
+  .sidebar nav button .ic { width:18px; text-align:center; }
+  .sidebar nav button:hover { background:rgba(255,255,255,.08); color:#fff; }
+  .sidebar nav button.active { background:rgba(255,255,255,.14); color:#fff; font-weight:600; border-left-color:#fff; }
+  .sidebar nav button .count {
+    margin-left:auto; background:rgba(255,255,255,.18); border-radius:999px; padding:1px 7px; font-size:11px;
+  }
+  .sidebar .foot { margin-top:auto; padding:14px 20px 4px; font-size:11px; color:rgba(255,255,255,.55); border-top:1px solid rgba(255,255,255,.12); }
+
+  /* Main */
+  .main { flex:1; min-width:0; display:flex; flex-direction:column; }
+  .topbar {
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    padding: 14px 26px; background:var(--surface-1); border-bottom:1px solid var(--border);
+    position:sticky; top:0; z-index:20;
+  }
+  .topbar h1 { font-size:17px; margin:0; }
+  .topbar .topbar-sub { font-size:12px; color:var(--text-secondary); margin-top:2px;}
+  .topbar-right { display:flex; align-items:center; gap:10px; }
+  .icon-btn {
+    background:var(--page-plane); border:1px solid var(--border); border-radius:8px; width:34px;height:34px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:15px; color:var(--text-secondary);
+  }
+  .icon-btn:hover { border-color: var(--series-1); color:var(--series-1); }
+  .btn {
+    border:1px solid var(--border); background:var(--surface-1); color:var(--text-primary); border-radius:8px;
+    padding:8px 14px; font-size:13px; cursor:pointer; font-weight:600;
+  }
+  .btn:hover { border-color:var(--series-1); }
+  .btn-primary { background: var(--brand-soft); color:#fff; border-color:var(--brand-soft); }
+  .btn-primary:hover { background: var(--brand-strong); border-color:var(--brand-strong); }
+  .btn-danger { background:var(--status-critical); color:#fff; border-color:var(--status-critical); }
+  .btn-ghost { background:transparent; border-color:transparent; color:var(--text-secondary); }
+  .btn-sm { padding:5px 10px; font-size:12px; border-radius:6px; }
+  .btn[disabled] { opacity:.45; cursor:not-allowed; }
+
+  .content { padding:22px 26px 60px; max-width:1280px; margin:0 auto; width:100%; }
+  .view { display:none; }
+  .view.active { display:block; }
+
+  .banner {
+    background: color-mix(in srgb, var(--series-1) 10%, var(--surface-1));
+    border:1px solid var(--border); border-radius:10px; padding:12px 16px; margin-bottom:20px;
+    font-size:12.5px; color:var(--text-secondary); display:flex; gap:10px; align-items:flex-start;
+  }
+  .banner b { color:var(--text-primary); }
+  .banner .close-banner { margin-left:auto; cursor:pointer; color:var(--text-muted); font-size:14px; }
+
+  h2.view-title { font-size:19px; margin:0 0 4px; }
+  p.view-desc { color:var(--text-secondary); font-size:12.5px; margin:0 0 20px; }
+
+  /* KPI */
+  .kpi-row { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:22px; }
+  .kpi-tile { flex:1; min-width:190px; background:var(--surface-1); border:1px solid var(--border); border-radius:12px; padding:16px 18px; }
+  .kpi-label { font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:var(--text-secondary); font-weight:600; }
+  .kpi-value { font-size:26px; font-weight:700; margin-top:6px; font-variant-numeric: normal; }
+  .kpi-note { font-size:11.5px; color:var(--text-muted); margin-top:4px; }
+
+  .grid-2 { display:grid; grid-template-columns: 1.3fr 1fr; gap:18px; }
+  .grid-2b { display:grid; grid-template-columns: 1fr 1fr; gap:18px; }
+  @media (max-width: 900px) { .grid-2, .grid-2b { grid-template-columns: 1fr; } }
+
+  .card { background:var(--surface-1); border:1px solid var(--border); border-radius:12px; padding:18px 20px; margin-bottom:18px; }
+  .card h3 { margin:0 0 2px; font-size:14.5px; }
+  .card .card-sub { color:var(--text-secondary); font-size:11.5px; margin-bottom:16px; }
+
+  /* Bar chart */
+  .bar-row { display:flex; align-items:center; gap:10px; margin-bottom:9px; }
+  .bar-row .bar-label { width:132px; flex-shrink:0; font-size:12.5px; color:var(--text-secondary); text-align:right; }
+  .bar-track { flex:1; background:var(--gridline); border-radius:4px; height:22px; overflow:hidden; }
+  .bar-fill { height:100%; border-radius:0 4px 4px 0; transition:width .25s ease; }
+  .bar-row .bar-value { width:64px; flex-shrink:0; font-size:12.5px; font-weight:700; }
+  .legend { display:flex; gap:18px; margin-top:10px; font-size:12px; color:var(--text-secondary); flex-wrap:wrap;}
+  .legend .legend-item { display:flex; align-items:center; gap:6px; }
+  .legend .swatch { width:10px; height:10px; border-radius:2px; display:inline-block; flex-shrink:0; }
+  .mini-table { width:100%; border-collapse:collapse; margin-top:6px; font-size:12.5px; }
+  .mini-table th { text-align:left; color:var(--text-muted); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.03em; padding:6px 8px; border-bottom:1px solid var(--gridline); }
+  .mini-table td { padding:7px 8px; border-bottom:1px solid var(--gridline); color:var(--text-secondary); }
+  .mini-table tr:last-child td { border-bottom:none; }
+
+  /* Badges */
+  .badge { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:999px; font-size:11.5px; font-weight:700; white-space:nowrap; }
+
+  /* Tables */
+  table.data-table { width:100%; border-collapse:collapse; }
+  table.data-table th {
+    text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:var(--text-muted);
+    padding:9px 12px; border-bottom:1px solid var(--gridline); background:var(--page-plane);
+  }
+  table.data-table td { padding:11px 12px; border-bottom:1px solid var(--gridline); font-size:13px; vertical-align:middle; }
+  table.data-table tr:hover td { background: color-mix(in srgb, var(--series-1) 5%, transparent); cursor:pointer; }
+  .table-wrap { background:var(--surface-1); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+
+  .toolbar { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
+  .filters { display:flex; gap:8px; flex-wrap:wrap; }
+  select, input[type=text], input[type=number], input[type=tel], textarea {
+    border:1px solid var(--border); border-radius:7px; padding:7px 10px; font-size:13px; background:var(--surface-1); color:var(--text-primary);
+  }
+  label.field { display:flex; flex-direction:column; gap:4px; font-size:12px; color:var(--text-secondary); font-weight:600; margin-bottom:12px; }
+  label.field input, label.field select, label.field textarea { font-weight:400; color:var(--text-primary); }
+
+  /* Kanban */
+  .kanban { display:flex; gap:12px; overflow-x:auto; padding-bottom:10px; }
+  .kanban-col { min-width:230px; flex-shrink:0; background:var(--surface-1); border:1px solid var(--border); border-radius:12px; padding:10px; }
+  .kanban-col .kc-head { display:flex; align-items:center; justify-content:space-between; padding:4px 6px 10px; }
+  .kanban-col .kc-head .kc-title { font-size:12.5px; font-weight:700; }
+  .kanban-col .kc-head .kc-count { font-size:11px; color:var(--text-secondary); background:var(--page-plane); border-radius:999px; padding:1px 8px; }
+  .kanban-col.dragover { outline:2px dashed var(--series-1); outline-offset:2px; }
+  .kcard {
+    background:var(--page-plane); border:1px solid var(--border); border-radius:9px; padding:10px; margin-bottom:8px; cursor:grab; font-size:12.5px;
+  }
+  .kcard:active { cursor:grabbing; }
+  .kcard .kc-nome { font-weight:700; font-size:12.5px; margin-bottom:5px; }
+  .kcard .kc-meta { display:flex; justify-content:space-between; align-items:center; margin-top:6px; }
+  .kcard .kc-valor { font-weight:700; font-size:12.5px; }
+
+  /* Modal */
+  .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; z-index:100; padding:20px; }
+  .modal-overlay.active { display:flex; }
+  .modal { background:var(--surface-1); border-radius:14px; max-width:640px; width:100%; max-height:88vh; overflow-y:auto; padding:22px 24px; box-shadow:0 20px 60px rgba(0,0,0,.3); }
+  .modal-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+  .modal-head h3 { margin:0; font-size:16px; }
+  .modal-close { cursor:pointer; color:var(--text-muted); font-size:18px; background:none; border:none; }
+  .timeline { border-left:2px solid var(--gridline); margin-left:6px; padding-left:16px; }
+  .timeline-item { position:relative; padding-bottom:16px; }
+  .timeline-item::before { content:''; position:absolute; left:-21px; top:2px; width:9px; height:9px; border-radius:50%; background:var(--series-1); }
+  .timeline-item .ti-head { font-size:12.5px; font-weight:700; display:flex; gap:8px; align-items:center; }
+  .timeline-item .ti-date { font-size:11px; color:var(--text-muted); font-weight:400; }
+  .timeline-item .ti-note { font-size:12.5px; color:var(--text-secondary); margin-top:2px; }
+  hr.sep { border:none; border-top:1px solid var(--gridline); margin:16px 0; }
+
+  .propcard { background:var(--surface-1); border:1px solid var(--border); border-radius:12px; padding:16px 18px; margin-bottom:12px; }
+  .propcard .pc-top { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+  .propcard .pc-title { font-weight:700; font-size:13.5px; }
+  .propcard .pc-sub { font-size:12px; color:var(--text-secondary); margin-top:2px; }
+  .propcard .pc-total { font-weight:700; font-size:15px; text-align:right; }
+  .propcard .pc-items { font-size:12px; color:var(--text-secondary); margin-top:10px; }
+  .propcard .pc-actions { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+  .alert { border-radius:9px; padding:10px 12px; font-size:12.5px; display:flex; gap:8px; align-items:flex-start; margin-top:10px; }
+  .alert-warning { background: color-mix(in srgb, var(--status-warning) 16%, var(--surface-1)); color: var(--text-primary); border:1px solid color-mix(in srgb, var(--status-warning) 40%, transparent); }
+  .alert-critical { background: color-mix(in srgb, var(--status-critical) 12%, var(--surface-1)); color: var(--text-primary); border:1px solid color-mix(in srgb, var(--status-critical) 35%, transparent); }
+  .alert-good { background: color-mix(in srgb, var(--status-good) 12%, var(--surface-1)); color: var(--text-primary); border:1px solid color-mix(in srgb, var(--status-good) 35%, transparent); }
+
+  .empty-state { text-align:center; padding:50px 20px; color:var(--text-muted); font-size:13px; }
+  .line-item-row { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
+  .line-item-row select { flex:2; }
+  .line-item-row input { flex:1; }
+  .line-item-row .li-remove { cursor:pointer; color:var(--text-muted); font-size:16px; background:none;border:none; }
+  .tag-list { display:flex; gap:6px; flex-wrap:wrap; }
+
+  .stat-inline { display:flex; gap:22px; flex-wrap:wrap; margin-top:6px; }
+  .stat-inline div { font-size:12.5px; color:var(--text-secondary); }
+  .stat-inline b { color:var(--text-primary); font-size:14px; display:block; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="mark">🧉</div>
+      <div>
+        <div class="name">CRM SrMATE</div>
+        <div class="sub">Protótipo — Fase 1 e 2</div>
+      </div>
+    </div>
+    <nav id="nav"></nav>
+    <div class="foot">Dados fictícios, apenas para validação do protótipo. Nada é salvo ao recarregar a página.</div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1 id="topbarTitle">Visão geral</h1>
+        <div class="topbar-sub" id="topbarSub">Painel de acompanhamento de leads, clientes e propostas B2B</div>
+      </div>
+      <div class="topbar-right">
+        <button class="icon-btn" id="themeToggle" title="Alternar tema claro/escuro">🌙</button>
+        <button class="btn btn-primary" onclick="abrirModalNovoCliente()">+ Novo lead / cliente</button>
+      </div>
+    </div>
+    <div class="content" id="content">
+
+      <!-- DASHBOARD -->
+      <section class="view" id="view-dashboard">
+        <div class="banner" id="introBanner">
+          <span>ℹ️</span>
+          <div>
+            <b>Sobre este protótipo:</b> cobre a Fase 1 (cadastro único de clientes/leads, funil de vendas, registro de interações e dashboard de pipeline) e a Fase 2 (propostas com preço por canal, checagem de estoque e aprovação de desconto), definidas no benchmark de CRMs (Agendor, RD Station CRM e Ploomes) feito para a fábrica de MATE. A Fase 3 (integração com e-commerce) fica para uma etapa futura.
+          </div>
+          <span class="close-banner" onclick="document.getElementById('introBanner').style.display='none'">✕</span>
+        </div>
+
+        <div class="kpi-row" id="kpiRow"></div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3>Funil de vendas — leads por estágio</h3>
+            <div class="card-sub">Volume de clientes/leads ativos em cada etapa do funil comercial</div>
+            <div id="funilChart"></div>
+          </div>
+          <div class="card">
+            <h3>Valor em pipeline por canal</h3>
+            <div class="card-sub">Soma do valor estimado dos negócios em aberto, por canal de venda</div>
+            <div id="canalChart"></div>
+          </div>
+        </div>
+
+        <div class="grid-2b">
+          <div class="card">
+            <h3>Atividade recente</h3>
+            <div class="card-sub">Últimas interações registradas com clientes e leads</div>
+            <div id="atividadeRecente"></div>
+          </div>
+          <div class="card">
+            <h3>Aprovações pendentes</h3>
+            <div class="card-sub">Propostas com desconto acima de 5% aguardando decisão do gestor</div>
+            <div id="aprovacoesResumo"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CLIENTES -->
+      <section class="view" id="view-clientes">
+        <h2 class="view-title">Clientes &amp; Leads</h2>
+        <p class="view-desc">Cadastro único com histórico de interações — substitui o controle manual em planilhas.</p>
+        <div class="toolbar">
+          <div class="filters">
+            <select id="filtroCanalClientes" onchange="renderClientesView()">
+              <option value="">Todos os canais</option>
+              <option>Distribuidor</option>
+              <option>Atacado</option>
+              <option>Varejo</option>
+            </select>
+            <select id="filtroEstagioClientes" onchange="renderClientesView()">
+              <option value="">Todos os estágios</option>
+            </select>
+            <input type="text" id="buscaClientes" placeholder="Buscar por nome ou contato…" oninput="renderClientesView()" style="min-width:220px;">
+          </div>
+          <button class="btn btn-primary" onclick="abrirModalNovoCliente()">+ Novo lead / cliente</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="tabelaClientes"></table>
+        </div>
+      </section>
+
+      <!-- FUNIL / KANBAN -->
+      <section class="view" id="view-funil">
+        <h2 class="view-title">Funil de vendas</h2>
+        <p class="view-desc">Arraste os cartões entre as colunas para mover o cliente/lead de estágio (ou use os botões dentro do cartão).</p>
+        <div class="kanban" id="kanbanBoard"></div>
+      </section>
+
+      <!-- PROPOSTAS -->
+      <section class="view" id="view-propostas">
+        <h2 class="view-title">Propostas</h2>
+        <p class="view-desc">Geração de propostas com tabela de preço por canal, checagem de estoque e regra de aprovação de desconto.</p>
+        <div class="toolbar">
+          <div class="filters">
+            <select id="filtroStatusPropostas" onchange="renderPropostasView()">
+              <option value="">Todos os status</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" onclick="abrirModalNovaProposta()">+ Nova proposta</button>
+        </div>
+        <div id="listaPropostas"></div>
+      </section>
+
+      <!-- APROVAÇÕES -->
+      <section class="view" id="view-aprovacoes">
+        <h2 class="view-title">Aprovações de desconto</h2>
+        <p class="view-desc">Regra: até 5% aprovação automática · 5%–15% requer aprovação do gestor · acima de 15% bloqueado.</p>
+        <div id="filaAprovacoes"></div>
+      </section>
+
+      <!-- RELATÓRIOS -->
+      <section class="view" id="view-relatorios">
+        <h2 class="view-title">Relatórios</h2>
+        <p class="view-desc">Indicadores simples de pipeline e vendas por canal.</p>
+        <div class="grid-2b">
+          <div class="card">
+            <h3>Pipeline por canal (R$)</h3>
+            <div class="card-sub">Negócios em aberto (exclui fechado/ganho e fechado/perdido)</div>
+            <div id="relPipelineCanal"></div>
+          </div>
+          <div class="card">
+            <h3>Conversão do funil</h3>
+            <div class="card-sub">Fechado/ganho vs. fechado/perdido no período</div>
+            <div id="relConversao"></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Resumo por estágio</h3>
+          <div id="relTabelaEstagios"></div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modal genérico -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalBody"></div>
+</div>
+
+<script>
+/* =========================================================================
+   DADOS (mock) — CRM SrMATE — Protótipo Fase 1 + Fase 2
+   ========================================================================= */
+
+const ESTAGIOS = ["Novo Lead","Contato Feito","Proposta Enviada","Negociação","Fechado Ganho","Fechado Perdido"];
+const ESTAGIOS_FUNIL = ["Novo Lead","Contato Feito","Proposta Enviada","Negociação","Fechado Ganho"]; // para o gráfico ordinal
+const CANAIS = ["Distribuidor","Atacado","Varejo"];
+
+const PRODUTOS = [
+  { id:'p1', nome:'Erva-Mate Tradicional 1kg', precos:{ Distribuidor:14.90, Atacado:17.90, Varejo:22.90 }, estoque:4200 },
+  { id:'p2', nome:'Erva-Mate Composta Hortelã 500g', precos:{ Distribuidor:9.50, Atacado:11.90, Varejo:15.90 }, estoque:1800 },
+  { id:'p3', nome:'Erva-Mate Premium Selecionada 1kg', precos:{ Distribuidor:21.90, Atacado:25.90, Varejo:32.90 }, estoque:650 },
+  { id:'p4', nome:'Kit Degustação 3x250g', precos:{ Distribuidor:28.00, Atacado:34.00, Varejo:45.00 }, estoque:120 },
+];
+
+let clientes = [
+  { id:'c1', nome:'Distribuidora Erva Nativa Ltda', canal:'Distribuidor', contato:'Marcos Vieira', telefone:'(51) 99811-2233', estagio:'Negociação', valorEstimado:18500, criadoEm:'2026-06-12',
+    historico:[
+      {data:'2026-06-12', tipo:'E-mail', nota:'Primeiro contato via formulário do site.'},
+      {data:'2026-06-20', tipo:'Ligação', nota:'Apresentação do portfólio e condições de distribuidor.'},
+      {data:'2026-07-22', tipo:'WhatsApp', nota:'Negociando volume mensal mínimo e prazo de pagamento.'},
+    ]},
+  { id:'c2', nome:'Atacadão Vale Verde', canal:'Atacado', contato:'Fernanda Lima', telefone:'(51) 98123-4455', estagio:'Proposta Enviada', valorEstimado:6200, criadoEm:'2026-07-01',
+    historico:[
+      {data:'2026-07-01', tipo:'WhatsApp', nota:'Cliente pediu tabela de preço para atacado.'},
+      {data:'2026-07-15', tipo:'E-mail', nota:'Proposta enviada com Erva Composta 500g.'},
+    ]},
+  { id:'c3', nome:'Empório Chimarrão Gaúcho', canal:'Varejo', contato:'Rita Souza', telefone:'(51) 99777-1010', estagio:'Novo Lead', valorEstimado:950, criadoEm:'2026-08-01',
+    historico:[ {data:'2026-08-01', tipo:'WhatsApp', nota:'Lead veio de indicação de outro varejista.'} ]},
+  { id:'c4', nome:'Distribuidora Sul Bebidas', canal:'Distribuidor', contato:'Paulo Henrique', telefone:'(51) 99222-8899', estagio:'Contato Feito', valorEstimado:12300, criadoEm:'2026-07-18',
+    historico:[
+      {data:'2026-07-18', tipo:'Ligação', nota:'Interesse em linha Premium para revenda em Caxias do Sul.'},
+      {data:'2026-07-30', tipo:'Visita', nota:'Visita técnica ao armazém do cliente.'},
+    ]},
+  { id:'c5', nome:'Mercadinho Boa Vista', canal:'Varejo', contato:'Cláudia Nunes', telefone:'(51) 99655-3322', estagio:'Fechado Ganho', valorEstimado:1400, criadoEm:'2026-06-02',
+    historico:[
+      {data:'2026-06-02', tipo:'WhatsApp', nota:'Primeiro pedido pequeno, teste de aceitação.'},
+      {data:'2026-06-25', tipo:'E-mail', nota:'Pedido recorrente aprovado — cliente satisfeito.'},
+    ]},
+  { id:'c6', nome:'Rede Atacarejo Pampa', canal:'Atacado', contato:'Diego Ramos', telefone:'(51) 98811-7766', estagio:'Negociação', valorEstimado:9800, criadoEm:'2026-07-05',
+    historico:[
+      {data:'2026-07-05', tipo:'E-mail', nota:'Solicitou cotação para 3 lojas da rede.'},
+      {data:'2026-07-29', tipo:'Ligação', nota:'Pedindo desconto adicional por volume — em negociação.'},
+    ]},
+  { id:'c7', nome:'Casa do Chimarrão', canal:'Varejo', contato:'Luiza Prado', telefone:'(51) 99344-5566', estagio:'Contato Feito', valorEstimado:1100, criadoEm:'2026-07-27',
+    historico:[ {data:'2026-07-27', tipo:'WhatsApp', nota:'Pediu amostra do Kit Degustação.'} ]},
+  { id:'c8', nome:'Distribuidora RS Erva & Cia', canal:'Distribuidor', contato:'André Barbosa', telefone:'(51) 99900-1122', estagio:'Proposta Enviada', valorEstimado:21000, criadoEm:'2026-06-28',
+    historico:[
+      {data:'2026-06-28', tipo:'Visita', nota:'Visita comercial na sede do distribuidor.'},
+      {data:'2026-07-20', tipo:'E-mail', nota:'Proposta enviada incluindo Kit Degustação — checar estoque.'},
+    ]},
+  { id:'c9', nome:'Armazém Tradição Gaúcha', canal:'Varejo', contato:'Beatriz Costa', telefone:'(51) 99233-4400', estagio:'Fechado Perdido', valorEstimado:800, criadoEm:'2026-06-10',
+    historico:[
+      {data:'2026-06-10', tipo:'WhatsApp', nota:'Negociação iniciada.'},
+      {data:'2026-07-02', tipo:'Ligação', nota:'Cliente optou por concorrente com preço menor. Perdido.'},
+    ]},
+  { id:'c10', nome:'Atacado Bebidas do Sul', canal:'Atacado', contato:'Ricardo Alves', telefone:'(51) 99888-2211', estagio:'Novo Lead', valorEstimado:4300, criadoEm:'2026-08-03',
+    historico:[ {data:'2026-08-03', tipo:'E-mail', nota:'Lead recebido via WhatsApp Business.'} ]},
+  { id:'c11', nome:'Mercado Central Erva-Mate', canal:'Varejo', contato:'Simone Dias', telefone:'(51) 99111-9988', estagio:'Novo Lead', valorEstimado:1200, criadoEm:'2026-08-02',
+    historico:[ {data:'2026-08-02', tipo:'WhatsApp', nota:'Pediu catálogo de produtos.'} ]},
+  { id:'c12', nome:'Distribuidora Chimarrão Express', canal:'Distribuidor', contato:'Eduardo Martins', telefone:'(51) 99456-7788', estagio:'Fechado Ganho', valorEstimado:15600, criadoEm:'2026-05-20',
+    historico:[
+      {data:'2026-05-20', tipo:'Ligação', nota:'Contato inicial via feira do setor.'},
+      {data:'2026-06-15', tipo:'Visita', nota:'Fechamento de contrato de distribuição regional.'},
+    ]},
+  { id:'c13', nome:'Loja Gaúcha Store', canal:'Varejo', contato:'Patrícia Gomes', telefone:'(51) 99677-3344', estagio:'Contato Feito', valorEstimado:700, criadoEm:'2026-07-31',
+    historico:[ {data:'2026-07-31', tipo:'E-mail', nota:'Pequeno varejista local, primeiro contato.'} ]},
+];
+
+let propostas = [
+  { id:'pr1', clienteId:'c1', canal:'Distribuidor', itens:[ {produtoId:'p1', quantidade:500}, {produtoId:'p3', quantidade:100} ], descontoPct:8, status:'Aguardando aprovação', criadoEm:'2026-07-22' },
+  { id:'pr2', clienteId:'c2', canal:'Atacado', itens:[ {produtoId:'p2', quantidade:300} ], descontoPct:3, status:'Enviada', criadoEm:'2026-07-15' },
+  { id:'pr3', clienteId:'c8', canal:'Distribuidor', itens:[ {produtoId:'p4', quantidade:150} ], descontoPct:5, status:'Rascunho', criadoEm:'2026-07-20' },
+  { id:'pr4', clienteId:'c6', canal:'Atacado', itens:[ {produtoId:'p1', quantidade:200}, {produtoId:'p2', quantidade:100} ], descontoPct:12, status:'Aguardando aprovação', criadoEm:'2026-07-29' },
+  { id:'pr5', clienteId:'c12', canal:'Distribuidor', itens:[ {produtoId:'p3', quantidade:80} ], descontoPct:4, status:'Aceita', criadoEm:'2026-06-15' },
+  { id:'pr6', clienteId:'c5', canal:'Varejo', itens:[ {produtoId:'p1', quantidade:20} ], descontoPct:0, status:'Aceita', criadoEm:'2026-06-25' },
+  { id:'pr7', clienteId:'c4', canal:'Distribuidor', itens:[ {produtoId:'p1', quantidade:300}, {produtoId:'p4', quantidade:50} ], descontoPct:18, status:'Bloqueada', criadoEm:'2026-07-30' },
+];
+
+let nextClienteId = 14;
+let nextPropostaId = 8;
+
+/* =========================================================================
+   PALETA (validada — dataviz skill)
+   ========================================================================= */
+function paleta(){
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  return dark
+    ? { canal:{ Distribuidor:'#3987e5', Atacado:'#d95926', Varejo:'#199e70' },
+        funil:['#86b6ef','#6da7ec','#3987e5','#256abf','#184f95'],
+        good:'#0ca30c', warning:'#fab219', serious:'#ec835a', critical:'#d03b3b' }
+    : { canal:{ Distribuidor:'#2a78d6', Atacado:'#eb6834', Varejo:'#1baf7a' },
+        funil:['#86b6ef','#6da7ec','#3987e5','#256abf','#184f95'],
+        good:'#0ca30c', warning:'#fab219', serious:'#ec835a', critical:'#d03b3b' };
+}
+function hexToRgba(hex, a){
+  const h = hex.replace('#','');
+  const r = parseInt(h.substring(0,2),16), g = parseInt(h.substring(2,4),16), b = parseInt(h.substring(4,6),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+/* =========================================================================
+   HELPERS
+   ========================================================================= */
+function fmtR$(v){ return v.toLocaleString('pt-BR', { style:'currency', currency:'BRL' }); }
+function fmtData(iso){ const d = new Date(iso + 'T00:00:00'); return d.toLocaleDateString('pt-BR'); }
+function getCliente(id){ return clientes.find(c => c.id === id); }
+function getProduto(id){ return PRODUTOS.find(p => p.id === id); }
+
+function regraDesconto(pct){
+  if (pct <= 5) return { tier:'auto', label:'Aprovação automática (≤5%)', cor:'good' };
+  if (pct <= 15) return { tier:'aprovacao', label:'Requer aprovação do gestor (5%–15%)', cor:'warning' };
+  return { tier:'bloqueado', label:'Bloqueado — desconto acima de 15%', cor:'critical' };
+}
+
+function calcularProposta(prop){
+  const itensCalc = prop.itens.map(it => {
+    const produto = getProduto(it.produtoId);
+    const ok = produto.estoque >= it.quantidade;
+    return { ...it, produto, ok, faltante: ok ? 0 : (it.quantidade - produto.estoque), precoUnit: produto.precos[prop.canal], totalItem: produto.precos[prop.canal] * it.quantidade };
+  });
+  const subtotal = itensCalc.reduce((s, it) => s + it.totalItem, 0);
+  const descontoValor = subtotal * (prop.descontoPct / 100);
+  const total = subtotal - descontoValor;
+  const estoqueInsuficiente = itensCalc.some(it => !it.ok);
+  const regra = regraDesconto(prop.descontoPct);
+  return { itensCalc, subtotal, descontoValor, total, estoqueInsuficiente, regra };
+}
+
+function statusBadge(status){
+  const map = {
+    'Rascunho': { cor:'var(--text-muted)', bg:'rgba(137,135,129,.15)', icon:'✎' },
+    'Aguardando aprovação': { cor:'#a97300', bg:hexToRgba(paleta().warning,.18), icon:'⏳' },
+    'Aprovada': { cor:paleta().good, bg:hexToRgba(paleta().good,.14), icon:'✓' },
+    'Recusada': { cor:paleta().critical, bg:hexToRgba(paleta().critical,.12), icon:'✕' },
+    'Bloqueada': { cor:paleta().critical, bg:hexToRgba(paleta().critical,.12), icon:'⛔' },
+    'Enviada': { cor:paleta().canal.Distribuidor, bg:hexToRgba(paleta().canal.Distribuidor,.12), icon:'➤' },
+    'Aceita': { cor:paleta().good, bg:hexToRgba(paleta().good,.14), icon:'✓' },
+  };
+  const s = map[status] || { cor:'var(--text-secondary)', bg:'transparent', icon:'' };
+  return `<span class="badge" style="color:${s.cor};background:${s.bg}">${s.icon} ${status}</span>`;
+}
+
+function canalBadge(canal){
+  const cor = paleta().canal[canal];
+  return `<span class="badge" style="color:${cor};background:${hexToRgba(cor,.13)}">${canal}</span>`;
+}
+
+function estagioBadge(estagio){
+  const idx = ESTAGIOS_FUNIL.indexOf(estagio);
+  let cor = 'var(--text-secondary)', bg = 'rgba(137,135,129,.15)';
+  if (idx >= 0) { cor = paleta().funil[idx]; bg = hexToRgba(paleta().funil[idx], .16); }
+  if (estagio === 'Fechado Perdido') { cor = paleta().critical; bg = hexToRgba(paleta().critical, .12); }
+  return `<span class="badge" style="color:${cor};background:${bg}">${estagio}</span>`;
+}
+
+/* =========================================================================
+   NAVEGAÇÃO
+   ========================================================================= */
+const NAV_ITEMS = [
+  { id:'dashboard', label:'Visão geral', icon:'📊', title:'Visão geral', sub:'Painel de acompanhamento de leads, clientes e propostas B2B' },
+  { id:'clientes', label:'Clientes & Leads', icon:'👥', title:'Clientes & Leads', sub:'Cadastro único de contatos com histórico de interações' },
+  { id:'funil', label:'Funil de vendas', icon:'🧭', title:'Funil de vendas', sub:'Visualização em quadro (kanban) dos estágios comerciais' },
+  { id:'propostas', label:'Propostas', icon:'🧾', title:'Propostas', sub:'Preço por canal, checagem de estoque e desconto' },
+  { id:'aprovacoes', label:'Aprovações', icon:'✅', title:'Aprovações de desconto', sub:'Fila de decisões do gestor' },
+  { id:'relatorios', label:'Relatórios', icon:'📈', title:'Relatórios', sub:'Indicadores simples de pipeline e vendas' },
+];
+let viewAtual = 'dashboard';
+
+function renderNav(){
+  const nav = document.getElementById('nav');
+  nav.innerHTML = NAV_ITEMS.map(item => {
+    let count = '';
+    if (item.id === 'aprovacoes') {
+      const n = propostas.filter(p => calcularProposta(p).regra.tier === 'aprovacao' && p.status === 'Aguardando aprovação').length;
+      if (n > 0) count = `<span class="count">${n}</span>`;
+    }
+    return `<button class="${item.id===viewAtual?'active':''}" onclick="mudarView('${item.id}')"><span class="ic">${item.icon}</span> ${item.label} ${count}</button>`;
+  }).join('');
+}
+
+function mudarView(id){
+  viewAtual = id;
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  const item = NAV_ITEMS.find(i => i.id === id);
+  document.getElementById('topbarTitle').textContent = item.title;
+  document.getElementById('topbarSub').textContent = item.sub;
+  renderNav();
+  renderView(id);
+}
+
+function renderView(id){
+  if (id === 'dashboard') renderDashboard();
+  else if (id === 'clientes') renderClientesView();
+  else if (id === 'funil') renderKanban();
+  else if (id === 'propostas') renderPropostasView();
+  else if (id === 'aprovacoes') renderAprovacoes();
+  else if (id === 'relatorios') renderRelatorios();
+}
+
+function renderAll(){ renderNav(); renderView(viewAtual); }
+
+/* =========================================================================
+   DASHBOARD
+   ========================================================================= */
+function renderDashboard(){
+  const leadsAtivos = clientes.filter(c => c.estagio !== 'Fechado Ganho' && c.estagio !== 'Fechado Perdido').length;
+  const propostasAbertas = propostas.filter(p => !['Aceita','Recusada','Bloqueada'].includes(p.status)).length;
+  const pipelineValor = clientes.filter(c => c.estagio !== 'Fechado Ganho' && c.estagio !== 'Fechado Perdido').reduce((s,c) => s + c.valorEstimado, 0);
+  const ganhos = clientes.filter(c => c.estagio === 'Fechado Ganho').length;
+  const perdidos = clientes.filter(c => c.estagio === 'Fechado Perdido').length;
+  const taxaConversao = (ganhos + perdidos) > 0 ? Math.round(ganhos / (ganhos + perdidos) * 100) : 0;
+
+  document.getElementById('kpiRow').innerHTML = `
+    <div class="kpi-tile"><div class="kpi-label">Leads / clientes ativos</div><div class="kpi-value">${leadsAtivos}</div><div class="kpi-note">em algum estágio do funil</div></div>
+    <div class="kpi-tile"><div class="kpi-label">Propostas em aberto</div><div class="kpi-value">${propostasAbertas}</div><div class="kpi-note">rascunho, aguardando aprovação ou enviada</div></div>
+    <div class="kpi-tile"><div class="kpi-label">Valor em pipeline</div><div class="kpi-value">${fmtR$(pipelineValor)}</div><div class="kpi-note">soma dos negócios em aberto</div></div>
+    <div class="kpi-tile"><div class="kpi-label">Taxa de conversão</div><div class="kpi-value">${taxaConversao}%</div><div class="kpi-note">${ganhos} ganhos / ${perdidos} perdidos</div></div>
+  `;
+
+  // Funil (ordinal, sequencial, direct labels)
+  const pal = paleta();
+  const maxFunil = Math.max(1, ...ESTAGIOS_FUNIL.map(e => clientes.filter(c => c.estagio === e).length));
+  document.getElementById('funilChart').innerHTML = ESTAGIOS_FUNIL.map((estagio, i) => {
+    const n = clientes.filter(c => c.estagio === estagio).length;
+    const pct = Math.max(4, Math.round(n / maxFunil * 100));
+    return `<div class="bar-row" title="${estagio}: ${n} clientes/leads">
+      <div class="bar-label">${estagio}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${pal.funil[i]}"></div></div>
+      <div class="bar-value">${n}</div>
+    </div>`;
+  }).join('') + `<div class="kpi-note" style="margin-top:8px;">Fechado/Perdido no período: <b>${perdidos}</b> — não incluído na progressão acima.</div>`;
+
+  // Pipeline por canal (categórico, com legenda + rótulos)
+  const abertos = clientes.filter(c => c.estagio !== 'Fechado Ganho' && c.estagio !== 'Fechado Perdido');
+  const maxCanal = Math.max(1, ...CANAIS.map(canal => abertos.filter(c => c.canal === canal).reduce((s,c) => s + c.valorEstimado, 0)));
+  document.getElementById('canalChart').innerHTML =
+    CANAIS.map(canal => {
+      const v = abertos.filter(c => c.canal === canal).reduce((s,c) => s + c.valorEstimado, 0);
+      const pct = Math.max(4, Math.round(v / maxCanal * 100));
+      return `<div class="bar-row" title="${canal}: ${fmtR$(v)}">
+        <div class="bar-label">${canal}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${pal.canal[canal]}"></div></div>
+        <div class="bar-value">${fmtR$(v)}</div>
+      </div>`;
+    }).join('') +
+    `<div class="legend">${CANAIS.map(c => `<span class="legend-item"><span class="swatch" style="background:${pal.canal[c]}"></span>${c}</span>`).join('')}</div>`;
+
+  // Atividade recente
+  const todasInteracoes = [];
+  clientes.forEach(c => c.historico.forEach(h => todasInteracoes.push({ ...h, cliente:c.nome, clienteId:c.id })));
+  todasInteracoes.sort((a,b) => b.data.localeCompare(a.data));
+  document.getElementById('atividadeRecente').innerHTML = todasInteracoes.slice(0,6).map(h => `
+    <div style="display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--gridline);font-size:12.5px;">
+      <div><b>${h.cliente}</b><br><span style="color:var(--text-secondary)">${h.tipo} — ${h.nota}</span></div>
+      <div style="color:var(--text-muted);white-space:nowrap;">${fmtData(h.data)}</div>
+    </div>`).join('') || '<div class="empty-state">Sem interações registradas.</div>';
+
+  // Aprovações resumo
+  const pendentes = propostas.filter(p => p.status === 'Aguardando aprovação');
+  document.getElementById('aprovacoesResumo').innerHTML = pendentes.length ? pendentes.map(p => {
+    const c = getCliente(p.clienteId); const calc = calcularProposta(p);
+    return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--gridline);font-size:12.5px;">
+      <div><b>${c.nome}</b><br><span style="color:var(--text-secondary)">Desconto de ${p.descontoPct}% — ${fmtR$(calc.total)}</span></div>
+      <button class="btn btn-sm" onclick="mudarView('aprovacoes')">Revisar</button>
+    </div>`;
+  }).join('') : '<div class="empty-state">Nenhuma aprovação pendente 🎉</div>';
+}
+
+/* =========================================================================
+   CLIENTES & LEADS
+   ========================================================================= */
+function renderClientesView(){
+  const selEstagio = document.getElementById('filtroEstagioClientes');
+  if (selEstagio.options.length <= 1) {
+    ESTAGIOS.forEach(e => { const o = document.createElement('option'); o.textContent = e; selEstagio.appendChild(o); });
+  }
+  const canal = document.getElementById('filtroCanalClientes').value;
+  const estagio = document.getElementById('filtroEstagioClientes').value;
+  const busca = (document.getElementById('buscaClientes').value || '').toLowerCase();
+
+  let lista = clientes.filter(c =>
+    (!canal || c.canal === canal) &&
+    (!estagio || c.estagio === estagio) &&
+    (!busca || c.nome.toLowerCase().includes(busca) || c.contato.toLowerCase().includes(busca))
+  );
+  lista = lista.slice().sort((a,b) => b.criadoEm.localeCompare(a.criadoEm));
+
+  const tabela = document.getElementById('tabelaClientes');
+  tabela.innerHTML = `
+    <thead><tr><th>Cliente / Lead</th><th>Canal</th><th>Estágio</th><th>Contato</th><th>Valor estimado</th><th>Última interação</th></tr></thead>
+    <tbody>
+      ${lista.map(c => {
+        const ultima = c.historico.length ? c.historico[c.historico.length-1].data : c.criadoEm;
+        return `<tr onclick="abrirModalCliente('${c.id}')">
+          <td><b>${c.nome}</b></td>
+          <td>${canalBadge(c.canal)}</td>
+          <td>${estagioBadge(c.estagio)}</td>
+          <td>${c.contato}<br><span style="color:var(--text-muted);font-size:11.5px;">${c.telefone}</span></td>
+          <td>${fmtR$(c.valorEstimado)}</td>
+          <td>${fmtData(ultima)}</td>
+        </tr>`;
+      }).join('') || `<tr><td colspan="6"><div class="empty-state">Nenhum cliente/lead encontrado com esses filtros.</div></td></tr>`}
+    </tbody>`;
+}
+
+function abrirModalCliente(id){
+  const c = getCliente(id);
+  const propsCliente = propostas.filter(p => p.clienteId === id);
+  const modal = document.getElementById('modalBody');
+  modal.innerHTML = `
+    <div class="modal-head">
+      <h3>${c.nome}</h3>
+      <button class="modal-close" onclick="fecharModal()">✕</button>
+    </div>
+    <div class="tag-list" style="margin-bottom:14px;">${canalBadge(c.canal)}${estagioBadge(c.estagio)}</div>
+    <div class="stat-inline" style="margin-bottom:10px;">
+      <div>Contato<br><b>${c.contato}</b></div>
+      <div>Telefone / WhatsApp<br><b>${c.telefone}</b></div>
+      <div>Valor estimado<br><b>${fmtR$(c.valorEstimado)}</b></div>
+      <div>Cliente desde<br><b>${fmtData(c.criadoEm)}</b></div>
+    </div>
+    <hr class="sep">
+    <label class="field">Mover para estágio
+      <select id="selEstagioModal">${ESTAGIOS.map(e => `<option ${e===c.estagio?'selected':''}>${e}</option>`).join('')}</select>
+    </label>
+    <button class="btn btn-primary btn-sm" onclick="moverEstagioModal('${id}')">Atualizar estágio</button>
+    <button class="btn btn-sm" onclick="fecharModal(); abrirModalNovaProposta('${id}')">+ Nova proposta</button>
+    <hr class="sep">
+    <h3 style="font-size:13.5px;margin-bottom:10px;">Histórico de interações</h3>
+    <div class="timeline">
+      ${c.historico.slice().reverse().map(h => `
+        <div class="timeline-item">
+          <div class="ti-head">${h.tipo} <span class="ti-date">${fmtData(h.data)}</span></div>
+          <div class="ti-note">${h.nota}</div>
+        </div>`).join('') || '<div class="empty-state">Sem interações.</div>'}
+    </div>
+    <hr class="sep">
+    <h3 style="font-size:13.5px;margin-bottom:10px;">Registrar nova interação</h3>
+    <label class="field">Tipo
+      <select id="tipoInteracaoModal"><option>WhatsApp</option><option>Ligação</option><option>E-mail</option><option>Visita</option></select>
+    </label>
+    <label class="field">Anotação
+      <textarea id="notaInteracaoModal" rows="2" placeholder="O que foi conversado?"></textarea>
+    </label>
+    <button class="btn btn-primary btn-sm" onclick="registrarInteracao('${id}')">Salvar interação</button>
+    ${propsCliente.length ? `<hr class="sep"><h3 style="font-size:13.5px;margin-bottom:10px;">Propostas deste cliente</h3>` +
+      propsCliente.map(p => `<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:12.5px;border-bottom:1px solid var(--gridline);">
+        <span>${fmtData(p.criadoEm)} — ${p.itens.length} item(ns)</span>${statusBadge(p.status)}</div>`).join('') : ''}
+  `;
+  document.getElementById('modalOverlay').classList.add('active');
+}
+
+function moverEstagioModal(id){
+  const novo = document.getElementById('selEstagioModal').value;
+  const c = getCliente(id);
+  const antigo = c.estagio;
+  c.estagio = novo;
+  if (antigo !== novo) {
+    c.historico.push({ data: new Date().toISOString().slice(0,10), tipo:'Sistema', nota:`Estágio alterado de "${antigo}" para "${novo}".` });
+  }
+  fecharModal();
+  renderAll();
+}
+
+function registrarInteracao(id){
+  const tipo = document.getElementById('tipoInteracaoModal').value;
+  const nota = document.getElementById('notaInteracaoModal').value.trim();
+  if (!nota) { alert('Escreva uma anotação antes de salvar.'); return; }
+  const c = getCliente(id);
+  c.historico.push({ data: new Date().toISOString().slice(0,10), tipo, nota });
+  fecharModal();
+  renderAll();
+}
+
+function abrirModalNovoCliente(){
+  const modal = document.getElementById('modalBody');
+  modal.innerHTML = `
+    <div class="modal-head"><h3>Novo lead / cliente</h3><button class="modal-close" onclick="fecharModal()">✕</button></div>
+    <label class="field">Nome da empresa <input type="text" id="novoNome" placeholder="Ex: Mercado Bom Preço"></label>
+    <label class="field">Canal
+      <select id="novoCanal">${CANAIS.map(c => `<option>${c}</option>`).join('')}</select>
+    </label>
+    <label class="field">Nome do contato <input type="text" id="novoContato" placeholder="Ex: João Silva"></label>
+    <label class="field">Telefone / WhatsApp <input type="tel" id="novoTelefone" placeholder="(51) 90000-0000"></label>
+    <label class="field">Valor estimado (R$) <input type="number" id="novoValor" placeholder="0"></label>
+    <button class="btn btn-primary" onclick="salvarNovoCliente()">Salvar lead</button>
+  `;
+  document.getElementById('modalOverlay').classList.add('active');
+}
+
+function salvarNovoCliente(){
+  const nome = document.getElementById('novoNome').value.trim();
+  if (!nome) { alert('Informe o nome da empresa.'); return; }
+  const c = {
+    id: 'c' + (nextClienteId++),
+    nome,
+    canal: document.getElementById('novoCanal').value,
+    contato: document.getElementById('novoContato').value.trim() || '—',
+    telefone: document.getElementById('novoTelefone').value.trim() || '—',
+    estagio: 'Novo Lead',
+    valorEstimado: Number(document.getElementById('novoValor').value) || 0,
+    criadoEm: new Date().toISOString().slice(0,10),
+    historico: [{ data: new Date().toISOString().slice(0,10), tipo:'Sistema', nota:'Lead cadastrado no CRM.' }],
+  };
+  clientes.push(c);
+  fecharModal();
+  renderAll();
+}
+
+/* =========================================================================
+   FUNIL — KANBAN
+   ========================================================================= */
+function renderKanban(){
+  const pal = paleta();
+  const board = document.getElementById('kanbanBoard');
+  board.innerHTML = ESTAGIOS.map((estagio, i) => {
+    const itens = clientes.filter(c => c.estagio === estagio);
+    const cor = estagio === 'Fechado Perdido' ? pal.critical : (pal.funil[i] || pal.good);
+    return `<div class="kanban-col" ondragover="event.preventDefault(); this.classList.add('dragover')" ondragleave="this.classList.remove('dragover')" ondrop="onDropKanban(event, '${estagio}')">
+      <div class="kc-head">
+        <span class="kc-title" style="color:${cor}">${estagio}</span>
+        <span class="kc-count">${itens.length}</span>
+      </div>
+      ${itens.map(c => `
+        <div class="kcard" draggable="true" ondragstart="event.dataTransfer.setData('text/plain','${c.id}')" onclick="abrirModalCliente('${c.id}')">
+          <div class="kc-nome">${c.nome}</div>
+          ${canalBadge(c.canal)}
+          <div class="kc-meta">
+            <span class="kc-valor">${fmtR$(c.valorEstimado)}</span>
+          </div>
+        </div>`).join('') || '<div class="empty-state" style="padding:20px 6px;">Vazio</div>'}
+    </div>`;
+  }).join('');
+}
+
+function onDropKanban(ev, novoEstagio){
+  ev.preventDefault();
+  ev.currentTarget.classList.remove('dragover');
+  const id = ev.dataTransfer.getData('text/plain');
+  const c = getCliente(id);
+  if (!c || c.estagio === novoEstagio) return;
+  const antigo = c.estagio;
+  c.estagio = novoEstagio;
+  c.historico.push({ data: new Date().toISOString().slice(0,10), tipo:'Sistema', nota:`Estágio alterado de "${antigo}" para "${novoEstagio}" (arrastar no funil).` });
+  renderAll();
+}
+
+/* =========================================================================
+   PROPOSTAS (CPQ — Fase 2)
+   ========================================================================= */
+function renderPropostasView(){
+  const selStatus = document.getElementById('filtroStatusPropostas');
+  if (selStatus.options.length <= 1) {
+    ['Rascunho','Aguardando aprovação','Aprovada','Enviada','Aceita','Recusada','Bloqueada'].forEach(s => {
+      const o = document.createElement('option'); o.textContent = s; selStatus.appendChild(o);
+    });
+  }
+  const filtro = selStatus.value;
+  let lista = propostas.filter(p => !filtro || p.status === filtro);
+  lista = lista.slice().sort((a,b) => b.criadoEm.localeCompare(a.criadoEm));
+
+  document.getElementById('listaPropostas').innerHTML = lista.map(p => {
+    const c = getCliente(p.clienteId);
+    const calc = calcularProposta(p);
+    return `<div class="propcard">
+      <div class="pc-top">
+        <div>
+          <div class="pc-title">${c.nome} ${canalBadge(p.canal)}</div>
+          <div class="pc-sub">Proposta de ${fmtData(p.criadoEm)} · ${p.itens.length} item(ns) · desconto de ${p.descontoPct}%</div>
+        </div>
+        <div>
+          <div class="pc-total">${fmtR$(calc.total)}</div>
+          <div style="text-align:right;margin-top:4px;">${statusBadge(p.status)}</div>
+        </div>
+      </div>
+      <div class="pc-items">${calc.itensCalc.map(it => `${it.produto.nome} × ${it.quantidade} — ${fmtR$(it.totalItem)} ${!it.ok ? ' <span style="color:var(--status-critical);font-weight:700;">(estoque insuficiente, faltam '+it.faltante+')</span>' : ''}`).join('<br>')}</div>
+      ${calc.estoqueInsuficiente ? `<div class="alert alert-critical">⚠️ <div>Estoque insuficiente para atender esta proposta integralmente. Ajuste a quantidade ou aguarde reposição antes de enviar.</div></div>` : ''}
+      ${calc.regra.tier === 'aprovacao' && p.status === 'Aguardando aprovação' ? `<div class="alert alert-warning">⏳ <div>${calc.regra.label}. <a href="#" onclick="mudarView('aprovacoes');return false;">Ver na fila de aprovações →</a></div></div>` : ''}
+      ${calc.regra.tier === 'bloqueado' ? `<div class="alert alert-critical">⛔ <div>${calc.regra.label}. Reduza o desconto ou negocie condições especiais com a gestão fora do fluxo padrão.</div></div>` : ''}
+      <div class="pc-actions">
+        ${p.status === 'Rascunho' && !calc.estoqueInsuficiente && calc.regra.tier !== 'bloqueado' ? `<button class="btn btn-sm btn-primary" onclick="enviarProposta('${p.id}')">Enviar proposta</button>` : ''}
+        ${p.status === 'Aprovada' ? `<button class="btn btn-sm btn-primary" onclick="enviarProposta('${p.id}')">Enviar ao cliente</button>` : ''}
+        ${p.status === 'Enviada' ? `<button class="btn btn-sm" onclick="marcarAceita('${p.id}')">Marcar como aceita</button>` : ''}
+        <button class="btn btn-sm btn-ghost" onclick="abrirModalCliente('${p.clienteId}')">Ver cliente</button>
+      </div>
+    </div>`;
+  }).join('') || '<div class="empty-state">Nenhuma proposta com esse filtro.</div>';
+}
+
+function enviarProposta(id){
+  const p = propostas.find(x => x.id === id);
+  p.status = 'Enviada';
+  renderAll();
+}
+function marcarAceita(id){
+  const p = propostas.find(x => x.id === id);
+  p.status = 'Aceita';
+  const c = getCliente(p.clienteId);
+  c.estagio = 'Fechado Ganho';
+  c.historico.push({ data: new Date().toISOString().slice(0,10), tipo:'Sistema', nota:'Proposta aceita pelo cliente — negócio fechado.' });
+  renderAll();
+}
+
+function abrirModalNovaProposta(clienteIdPreSelecionado){
+  const modal = document.getElementById('modalBody');
+  modal.innerHTML = `
+    <div class="modal-head"><h3>Nova proposta</h3><button class="modal-close" onclick="fecharModal()">✕</button></div>
+    <label class="field">Cliente
+      <select id="novaPropCliente" onchange="atualizarResumoProposta()">
+        ${clientes.map(c => `<option value="${c.id}" ${c.id===clienteIdPreSelecionado?'selected':''}>${c.nome} (${c.canal})</option>`).join('')}
+      </select>
+    </label>
+    <div id="itensProposta"></div>
+    <button class="btn btn-sm" onclick="adicionarLinhaItem()">+ Adicionar produto</button>
+    <label class="field" style="margin-top:14px;">Desconto solicitado (%)
+      <input type="number" id="novaPropDesconto" value="0" min="0" max="100" oninput="atualizarResumoProposta()">
+    </label>
+    <div id="resumoProposta"></div>
+    <div style="margin-top:14px;">
+      <button class="btn btn-primary" onclick="salvarNovaProposta()">Salvar proposta</button>
+    </div>
+  `;
+  document.getElementById('modalOverlay').classList.add('active');
+  document.getElementById('itensProposta').innerHTML = '';
+  adicionarLinhaItem();
+}
+
+function adicionarLinhaItem(){
+  const div = document.createElement('div');
+  div.className = 'line-item-row';
+  div.innerHTML = `
+    <select onchange="atualizarResumoProposta()">${PRODUTOS.map(p => `<option value="${p.id}">${p.nome}</option>`).join('')}</select>
+    <input type="number" value="10" min="1" oninput="atualizarResumoProposta()">
+    <button class="li-remove" onclick="this.parentElement.remove(); atualizarResumoProposta()">✕</button>
+  `;
+  document.getElementById('itensProposta').appendChild(div);
+  atualizarResumoProposta();
+}
+
+function lerItensFormulario(){
+  return Array.from(document.querySelectorAll('#itensProposta .line-item-row')).map(row => {
+    const sel = row.querySelector('select'), inp = row.querySelector('input');
+    return { produtoId: sel.value, quantidade: Number(inp.value) || 0 };
+  }).filter(it => it.quantidade > 0);
+}
+
+function atualizarResumoProposta(){
+  const clienteId = document.getElementById('novaPropCliente').value;
+  const c = getCliente(clienteId);
+  const descontoPct = Number(document.getElementById('novaPropDesconto').value) || 0;
+  const itens = lerItensFormulario();
+  const propTemp = { canal: c.canal, itens, descontoPct };
+  const calc = calcularProposta(propTemp);
+  document.getElementById('resumoProposta').innerHTML = `
+    <hr class="sep">
+    <div class="stat-inline">
+      <div>Canal de preço<br><b>${c.canal}</b></div>
+      <div>Subtotal<br><b>${fmtR$(calc.subtotal)}</b></div>
+      <div>Desconto<br><b>${fmtR$(calc.descontoValor)}</b></div>
+      <div>Total<br><b>${fmtR$(calc.total)}</b></div>
+    </div>
+    ${calc.itensCalc.some(it => !it.ok) ? `<div class="alert alert-critical">⚠️ Estoque insuficiente para: ${calc.itensCalc.filter(it=>!it.ok).map(it=>it.produto.nome+' (faltam '+it.faltante+')').join(', ')}</div>` : `<div class="alert alert-good">✓ Estoque disponível para todos os itens.</div>`}
+    ${calc.regra.tier === 'auto' ? `<div class="alert alert-good">✓ ${calc.regra.label}</div>` : ''}
+    ${calc.regra.tier === 'aprovacao' ? `<div class="alert alert-warning">⏳ ${calc.regra.label}</div>` : ''}
+    ${calc.regra.tier === 'bloqueado' ? `<div class="alert alert-critical">⛔ ${calc.regra.label}</div>` : ''}
+  `;
+}
+
+function salvarNovaProposta(){
+  const clienteId = document.getElementById('novaPropCliente').value;
+  const c = getCliente(clienteId);
+  const descontoPct = Number(document.getElementById('novaPropDesconto').value) || 0;
+  const itens = lerItensFormulario();
+  if (!itens.length) { alert('Adicione ao menos um produto.'); return; }
+  const calc = calcularProposta({ canal:c.canal, itens, descontoPct });
+  let status = 'Rascunho';
+  if (!calc.estoqueInsuficiente) {
+    if (calc.regra.tier === 'auto') status = 'Enviada';
+    else if (calc.regra.tier === 'aprovacao') status = 'Aguardando aprovação';
+    else status = 'Bloqueada';
+  }
+  const prop = { id:'pr' + (nextPropostaId++), clienteId, canal:c.canal, itens, descontoPct, status, criadoEm: new Date().toISOString().slice(0,10) };
+  propostas.push(prop);
+  if (c.estagio === 'Novo Lead' || c.estagio === 'Contato Feito') {
+    c.estagio = 'Proposta Enviada';
+  }
+  c.historico.push({ data: new Date().toISOString().slice(0,10), tipo:'Sistema', nota:'Nova proposta criada no CRM.' });
+  fecharModal();
+  mudarView('propostas');
+}
+
+/* =========================================================================
+   APROVAÇÕES
+   ========================================================================= */
+function renderAprovacoes(){
+  const pendentes = propostas.filter(p => p.status === 'Aguardando aprovação');
+  document.getElementById('filaAprovacoes').innerHTML = pendentes.length ? pendentes.map(p => {
+    const c = getCliente(p.clienteId);
+    const calc = calcularProposta(p);
+    return `<div class="propcard">
+      <div class="pc-top">
+        <div>
+          <div class="pc-title">${c.nome} ${canalBadge(p.canal)}</div>
+          <div class="pc-sub">Solicitado em ${fmtData(p.criadoEm)} · desconto de <b>${p.descontoPct}%</b></div>
+        </div>
+        <div class="pc-total">${fmtR$(calc.total)}</div>
+      </div>
+      <div class="pc-items">${calc.itensCalc.map(it => `${it.produto.nome} × ${it.quantidade}`).join(', ')}</div>
+      <div class="alert alert-warning">⏳ Subtotal ${fmtR$(calc.subtotal)} → desconto de ${fmtR$(calc.descontoValor)} → total ${fmtR$(calc.total)}.</div>
+      <div class="pc-actions">
+        <button class="btn btn-sm btn-primary" onclick="decidirAprovacao('${p.id}', true)">Aprovar desconto</button>
+        <button class="btn btn-sm btn-danger" onclick="decidirAprovacao('${p.id}', false)">Rejeitar</button>
+        <button class="btn btn-sm btn-ghost" onclick="abrirModalCliente('${p.clienteId}')">Ver cliente</button>
+      </div>
+    </div>`;
+  }).join('') : '<div class="empty-state">Nenhuma proposta aguardando aprovação 🎉</div>';
+}
+
+function decidirAprovacao(id, aprovar){
+  const p = propostas.find(x => x.id === id);
+  p.status = aprovar ? 'Aprovada' : 'Recusada';
+  const c = getCliente(p.clienteId);
+  c.historico.push({ data: new Date().toISOString().slice(0,10), tipo:'Sistema', nota: aprovar ? `Desconto de ${p.descontoPct}% aprovado pela gestão.` : `Desconto de ${p.descontoPct}% recusado pela gestão.` });
+  renderAll();
+}
+
+/* =========================================================================
+   RELATÓRIOS
+   ========================================================================= */
+function renderRelatorios(){
+  const pal = paleta();
+  const abertos = clientes.filter(c => c.estagio !== 'Fechado Ganho' && c.estagio !== 'Fechado Perdido');
+  const maxCanal = Math.max(1, ...CANAIS.map(canal => abertos.filter(c => c.canal === canal).reduce((s,c) => s + c.valorEstimado, 0)));
+  document.getElementById('relPipelineCanal').innerHTML =
+    CANAIS.map(canal => {
+      const v = abertos.filter(c => c.canal === canal).reduce((s,c) => s + c.valorEstimado, 0);
+      const pct = Math.max(4, Math.round(v / maxCanal * 100));
+      return `<div class="bar-row" title="${canal}: ${fmtR$(v)}">
+        <div class="bar-label">${canal}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${pal.canal[canal]}"></div></div>
+        <div class="bar-value">${fmtR$(v)}</div>
+      </div>`;
+    }).join('') +
+    `<div class="legend">${CANAIS.map(c => `<span class="legend-item"><span class="swatch" style="background:${pal.canal[c]}"></span>${c}</span>`).join('')}</div>`;
+
+  const ganhos = clientes.filter(c => c.estagio === 'Fechado Ganho');
+  const perdidos = clientes.filter(c => c.estagio === 'Fechado Perdido');
+  const totalDecididos = ganhos.length + perdidos.length;
+  const taxa = totalDecididos ? Math.round(ganhos.length / totalDecididos * 100) : 0;
+  const ticketMedio = ganhos.length ? ganhos.reduce((s,c) => s + c.valorEstimado, 0) / ganhos.length : 0;
+  document.getElementById('relConversao').innerHTML = `
+    <div class="stat-inline" style="margin-bottom:10px;">
+      <div>Fechado / Ganho<br><b style="color:${pal.good}">${ganhos.length}</b></div>
+      <div>Fechado / Perdido<br><b style="color:${pal.critical}">${perdidos.length}</b></div>
+      <div>Taxa de conversão<br><b>${taxa}%</b></div>
+      <div>Ticket médio (ganhos)<br><b>${fmtR$(ticketMedio)}</b></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">Ganho vs. Perdido</div>
+      <div class="bar-track" style="display:flex;">
+        <div style="height:100%;background:${pal.good};width:${totalDecididos? (ganhos.length/totalDecididos*100):0}%;border-radius:4px 0 0 4px;"></div>
+        <div style="height:100%;background:${pal.critical};width:${totalDecididos? (perdidos.length/totalDecididos*100):0}%;border-radius:0 4px 4px 0;"></div>
+      </div>
+      <div class="bar-value">${totalDecididos}</div>
+    </div>
+  `;
+
+  document.getElementById('relTabelaEstagios').innerHTML = `
+    <table class="mini-table">
+      <thead><tr><th>Estágio</th><th>Clientes/leads</th><th>Valor estimado</th></tr></thead>
+      <tbody>
+        ${ESTAGIOS.map(e => {
+          const lista = clientes.filter(c => c.estagio === e);
+          const v = lista.reduce((s,c) => s + c.valorEstimado, 0);
+          return `<tr><td>${estagioBadge(e)}</td><td>${lista.length}</td><td>${fmtR$(v)}</td></tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+}
+
+/* =========================================================================
+   MODAL GENÉRICO / TEMA / INIT
+   ========================================================================= */
+function fecharModal(){ document.getElementById('modalOverlay').classList.remove('active'); }
+document.getElementById('modalOverlay').addEventListener('click', (e) => { if (e.target.id === 'modalOverlay') fecharModal(); });
+
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const html = document.documentElement;
+  const atual = html.getAttribute('data-theme');
+  const novo = atual === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', novo);
+  document.getElementById('themeToggle').textContent = novo === 'dark' ? '☀️' : '🌙';
+  renderAll();
+});
+
+mudarView('dashboard');
+</script>
+</body>
+</html>
