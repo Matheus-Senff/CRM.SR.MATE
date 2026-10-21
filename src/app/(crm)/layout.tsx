@@ -6,6 +6,7 @@ import { sair } from "../login/actions";
 
 export default async function CrmLayout({ children }: LayoutProps<"/">) {
   const { supabase, perfil } = await exigirUsuario();
+  const nome = perfil.nome.includes("@") ? perfil.nome.split("@")[0] : perfil.nome;
   const { count } = await supabase
     .from("propostas")
     .select("id", { count: "exact", head: true })
@@ -19,9 +20,9 @@ export default async function CrmLayout({ children }: LayoutProps<"/">) {
         </div>
         <Nav pendentes={count ?? 0} admin={perfil.papel === "admin"} />
         <div className="foot">
-          <div className="avatar">{perfil.nome.trim().charAt(0).toUpperCase()}</div>
+          <div className="avatar">{nome.trim().charAt(0).toUpperCase()}</div>
           <div className="quem">
-            <b>{perfil.nome}</b>
+            <b>{nome}</b>
             <span>{ROTULO_PAPEL[perfil.papel]}</span>
           </div>
           <form action={sair}>

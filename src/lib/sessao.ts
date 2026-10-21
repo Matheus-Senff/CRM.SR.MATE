@@ -14,7 +14,7 @@ export const exigirUsuario = cache(async () => {
   if (!user) redirect("/login");
 
   const { data: perfil } = await supabase.from("perfis").select("id, nome, papel").eq("id", user.id).single<Perfil>();
-  if (!perfil) redirect("/login");
+  if (!perfil) redirect("/sem-acesso");
 
   return { supabase, user, perfil };
 });
