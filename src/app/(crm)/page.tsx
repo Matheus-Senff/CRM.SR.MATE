@@ -61,23 +61,19 @@ export default async function VisaoGeral() {
   return (
     <>
       <h1 className="view-title">Visão geral</h1>
-      <p className="view-desc">Negociações, propostas e atividades da sua carteira e das empresas compartilhadas.</p>
 
       <div className="kpi-row">
         <div className="kpi-tile">
           <div className="kpi-label">Negociações em aberto</div>
           <div className="kpi-value">{abertas.length}</div>
-          <div className="kpi-note">em algum estágio do funil</div>
         </div>
         <div className="kpi-tile">
           <div className="kpi-label">Propostas em andamento</div>
           <div className="kpi-value">{propostasAbertas ?? 0}</div>
-          <div className="kpi-note">rascunho, em aprovação, aprovada ou enviada</div>
         </div>
         <div className="kpi-tile">
           <div className="kpi-label">Valor em negociação</div>
           <div className="kpi-value">{fmtMoeda(pipeline)}</div>
-          <div className="kpi-note">soma das negociações em aberto</div>
         </div>
         <div className="kpi-tile">
           <div className="kpi-label">Taxa de conversão</div>
@@ -91,7 +87,6 @@ export default async function VisaoGeral() {
       <div className="grid-2">
         <div className="card">
           <h2>Funil de vendas</h2>
-          <div className="card-sub">Negociações em cada estágio</div>
           {porEstagio.map(({ e, n }) => (
             <div className="bar-row" key={e}>
               <div className="bar-label">{ROTULO_ESTAGIO[e]}</div>
@@ -101,11 +96,10 @@ export default async function VisaoGeral() {
               <div className="bar-value">{n}</div>
             </div>
           ))}
-          <div className="kpi-note">Fechadas como perdidas: {perdidos} (fora da progressão acima).</div>
+          <div className="kpi-note">Perdidas · {perdidos}</div>
         </div>
         <div className="card">
           <h2>Valor em negociação por canal</h2>
-          <div className="card-sub">Negociações em aberto</div>
           {porCanal.map(({ c, v }) => (
             <div className="bar-row" key={c}>
               <div className="bar-label">{ROTULO_CANAL[c]}</div>
@@ -121,7 +115,6 @@ export default async function VisaoGeral() {
       <div className="grid-2b">
         <div className="card">
           <h2>Atividade recente</h2>
-          <div className="card-sub">Últimas interações registradas</div>
           {interacoes?.length ? (
             <ul className="lista-simples">
               {interacoes.map((i) => (
@@ -146,7 +139,6 @@ export default async function VisaoGeral() {
         </div>
         <div className="card">
           <h2>Aprovações pendentes</h2>
-          <div className="card-sub">Propostas aguardando decisão da diretoria</div>
           {pendentes?.length ? (
             <ul className="lista-simples">
               {pendentes.map((p) => (

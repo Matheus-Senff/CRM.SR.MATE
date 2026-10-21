@@ -168,8 +168,6 @@ export function FormProposta({
           Total<b>{fmtMoeda(subtotal - descontoValor)}</b>
         </div>
       </div>
-      <p className="muted pequeno">Impostos (Simples Nacional, ICMS-ST, DIFAL) são calculados pelo Bling ao emitir a nota.</p>
-
       {semPreco.length > 0 && (
         <div className="alert alert-critical">
           Sem preço cadastrado para {ROTULO_CANAL[canal]}: {semPreco.map((id) => produto(id)?.nome).join(", ")}.

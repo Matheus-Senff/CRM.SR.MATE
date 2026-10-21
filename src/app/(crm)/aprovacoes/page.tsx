@@ -20,11 +20,10 @@ export default async function Aprovacoes() {
   return (
     <>
       <h1 className="view-title">Aprovações de desconto</h1>
-      <p className="view-desc">
-        Até {Number(regras?.limite_automatico ?? 5)}% aprovação automática · até {Number(regras?.limite_gestor ?? 15)}%
-        decisão da diretoria · acima disso, bloqueado.
-        {!podeDecidir && " Você acompanha aqui as suas propostas; quem decide é a diretoria."}
-      </p>
+      <div className="faixas">
+        <span className="faixa faixa-good">Automático até {Number(regras?.limite_automatico ?? 5)}%</span>
+        <span className="faixa faixa-warning">Diretoria até {Number(regras?.limite_gestor ?? 15)}%</span>
+      </div>
       {pendentes?.length ? (
         pendentes.map((p) => (
           <CartaoProposta key={p.id} proposta={p}>

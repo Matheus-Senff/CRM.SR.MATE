@@ -44,10 +44,6 @@ export default async function NovaProposta(props: PageProps<"/propostas/nova">) 
   return (
     <>
       <h1 className="view-title">Nova proposta</h1>
-      <p className="view-desc">
-        O preço vem da tabela do canal do cliente. Estoque, pedido mínimo e faixa de desconto são conferidos de novo no
-        servidor ao salvar.
-      </p>
       {negociacoes?.length ? (
         <FormProposta
           negociacoes={negociacoes}
@@ -59,7 +55,7 @@ export default async function NovaProposta(props: PageProps<"/propostas/nova">) 
           negociacaoInicial={negociacaoInicial}
         />
       ) : (
-        <div className="card empty-state">Nenhuma negociação em aberto. Crie uma na página do cliente.</div>
+        <div className="card empty-state">Nenhuma negociação em aberto.</div>
       )}
     </>
   );

@@ -17,7 +17,6 @@ export default async function Propostas(props: PageProps<"/propostas">) {
   return (
     <>
       <h1 className="view-title">Propostas</h1>
-      <p className="view-desc">Preço por canal, checagem de estoque e aprovação de desconto.</p>
       <div className="toolbar">
         <form className="form-inline">
           <select name="status" defaultValue={status} aria-label="Status">
@@ -31,7 +30,7 @@ export default async function Propostas(props: PageProps<"/propostas">) {
           <button className="btn">Filtrar</button>
         </form>
         <Link className="btn btn-primary" href="/propostas/nova">
-          + Nova proposta
+          Nova proposta
         </Link>
       </div>
 
