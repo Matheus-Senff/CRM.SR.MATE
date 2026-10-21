@@ -6,7 +6,6 @@ export default function NovaEmpresa() {
   return (
     <>
       <h1 className="view-title">Nova empresa</h1>
-      <p className="view-desc">A empresa entra na sua carteira, com uma primeira negociação em “Novo lead”.</p>
       <AcaoForm action={criarEmpresa} className="card">
         <CamposEmpresa />
         <hr className="sep" />

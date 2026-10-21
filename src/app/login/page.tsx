@@ -10,7 +10,7 @@ export default function LoginPage() {
     <main className="login">
       <form action={acao} className="card login-card">
         <div className="login-marca">
-          <span className="mark">🧉</span>
+          <span className="mark">Sr</span>
           <div>
             <div className="login-nome">CRM SrMATE</div>
             <div className="muted">Acesso da equipe comercial</div>
@@ -28,7 +28,6 @@ export default function LoginPage() {
         <button className="btn btn-primary btn-block" disabled={pendente}>
           {pendente ? "Entrando…" : "Entrar"}
         </button>
-        <p className="muted pequeno">Os acessos são criados pela diretoria no Supabase.</p>
       </form>
     </main>
   );

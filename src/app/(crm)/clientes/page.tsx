@@ -41,7 +41,6 @@ export default async function Clientes(props: PageProps<"/clientes">) {
   return (
     <>
       <h1 className="view-title">Clientes</h1>
-      <p className="view-desc">Sua carteira e as empresas que outros gestores compartilharam.</p>
 
       <div className="toolbar">
         <form className="form-inline">
@@ -55,13 +54,13 @@ export default async function Clientes(props: PageProps<"/clientes">) {
             ))}
           </select>
           <select name="carteira" defaultValue={carteira}>
-            <option value="">Todas as visíveis</option>
-            <option value="minha">Só a minha carteira</option>
+            <option value="">Toda a carteira</option>
+            <option value="minha">Minha carteira</option>
           </select>
           <button className="btn">Filtrar</button>
         </form>
         <Link className="btn btn-primary" href="/clientes/nova">
-          + Nova empresa
+          Nova empresa
         </Link>
       </div>
 

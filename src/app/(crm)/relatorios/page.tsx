@@ -44,9 +44,7 @@ export default async function Relatorios(props: PageProps<"/relatorios">) {
     <>
       <h1 className="view-title">Relatórios</h1>
       <div className="toolbar">
-        <p className="view-desc" style={{ margin: 0 }}>
-          Conversão e vendas no período; valor em negociação é a posição de hoje.
-        </p>
+        <div />
         <form className="form-inline">
           <select name="periodo" defaultValue={dias} aria-label="Período">
             {Object.entries(PERIODOS).map(([v, r]) => (
@@ -62,7 +60,6 @@ export default async function Relatorios(props: PageProps<"/relatorios">) {
       <div className="grid-2b">
         <div className="card">
           <h2>Valor em negociação por canal</h2>
-          <div className="card-sub">Negociações em aberto hoje</div>
           {porCanal.map(({ c, aberto }) => (
             <div className="bar-row" key={c}>
               <div className="bar-label">{ROTULO_CANAL[c]}</div>

@@ -12,9 +12,6 @@ export default async function Funil() {
   return (
     <>
       <h1 className="view-title">Funil de vendas</h1>
-      <p className="view-desc">
-        Arraste os cartões entre as colunas ou troque o estágio no seletor do cartão (funciona também no celular).
-      </p>
       <Kanban negociacoes={data ?? []} />
     </>
   );

@@ -76,15 +76,15 @@ export default async function DetalheEmpresa(props: PageProps<"/clientes/[id]">)
 
   return (
     <>
-      <p className="pequeno">
-        <Link href="/clientes">← Clientes</Link>
-      </p>
+      <Link href="/clientes" className="voltar">
+        Clientes
+      </Link>
       <h1 className="view-title">{empresa.nome}</h1>
       <div className="pc-actions" style={{ marginTop: 0, marginBottom: 18 }}>
         <CanalBadge canal={empresa.canal} />
         <span className="muted pequeno">
-          Responsável: {empresa.responsavel?.nome ?? "—"} · cliente desde {fmtData(empresa.created_at)}
-          {empresa.compartilhada ? " · compartilhada com a equipe" : " · carteira privada"}
+          {empresa.responsavel?.nome ?? "—"} · desde {fmtData(empresa.created_at)}
+          {empresa.compartilhada && " · compartilhada"}
         </span>
       </div>
 
@@ -92,7 +92,6 @@ export default async function DetalheEmpresa(props: PageProps<"/clientes/[id]">)
         <div>
           <div className="card">
             <h2>Negociações</h2>
-            <div className="card-sub">Cada pedido ou recompra é uma negociação com o seu estágio no funil.</div>
             {negociacoes.length ? (
               negociacoes.map((n) => (
                 <div key={n.id} className="propcard">

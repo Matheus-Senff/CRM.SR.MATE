@@ -35,7 +35,6 @@ export default async function Configuracoes(props: PageProps<"/configuracoes">) 
   return (
     <>
       <h1 className="view-title">Configurações</h1>
-      <p className="view-desc">Faixas de desconto, preços por canal, pedido mínimo e integração com o Bling.</p>
 
       {params.bling === "ok" && <div className="alert alert-good">Bling conectado.</div>}
       {typeof params.bling_erro === "string" && (
@@ -45,7 +44,6 @@ export default async function Configuracoes(props: PageProps<"/configuracoes">) 
       <div className="grid-2b">
         <div className="card">
           <h2>Faixas de desconto</h2>
-          <div className="card-sub">Valem para as próximas propostas.</div>
           <AcaoForm action={salvarRegrasDesconto}>
             <div className="form-grid">
               <label className="field">
@@ -63,12 +61,9 @@ export default async function Configuracoes(props: PageProps<"/configuracoes">) 
 
         <div className="card">
           <h2>Bling</h2>
-          <div className="card-sub">
-            Produtos e estoque vêm do Bling; propostas aceitas viram pedidos de venda lá, onde são calculados os impostos
-            e emitida a NF-e.
-          </div>
-          <p className="pequeno">
-            {conexao ? `Conectado · token renovado em ${fmtDataHora(conexao.atualizado_em)}` : "Não conectado."}
+          <p className="conexao">
+            <span className={`dot ${conexao ? "dot-on" : "dot-off"}`} />
+            {conexao ? `Conectado · ${fmtDataHora(conexao.atualizado_em)}` : "Não conectado"}
           </p>
           <div className="pc-actions">
             <a className="btn btn-sm" href="/api/bling/conectar">
@@ -84,8 +79,7 @@ export default async function Configuracoes(props: PageProps<"/configuracoes">) 
       </div>
 
       <div className="card">
-        <h2>Produtos, preços por canal e pedido mínimo</h2>
-        <div className="card-sub">Preço vazio = produto não pode ser vendido naquele canal.</div>
+        <h2>Produtos e preços</h2>
         {produtos?.length ? (
           produtos.map((p) => {
             const preco = (c: Canal) => p.precos.find((x) => x.canal === c)?.preco;
@@ -96,8 +90,8 @@ export default async function Configuracoes(props: PageProps<"/configuracoes">) 
                   {p.nome} {!p.ativo && <span className="muted pequeno">(inativo)</span>}
                 </div>
                 <div className="pc-sub">
-                  {p.sku ?? "sem código"} · estoque {p.estoque}
-                  {p.bling_id ? ` · Bling ${p.bling_id} · sincronizado ${fmtDataHora(p.sincronizado_em)}` : " · não vinculado ao Bling"}
+                  {p.sku ?? "Sem SKU"} · Estoque {p.estoque}
+                  {p.bling_id ? ` · Bling ${p.bling_id} · ${fmtDataHora(p.sincronizado_em)}` : ""}
                 </div>
                 <div className="form-inline" style={{ marginTop: 10 }}>
                   {CANAIS.map((c) => (
@@ -116,7 +110,7 @@ export default async function Configuracoes(props: PageProps<"/configuracoes">) 
             );
           })
         ) : (
-          <div className="empty-state">Nenhum produto. Conecte o Bling e sincronize.</div>
+          <div className="empty-state">Nenhum produto sincronizado.</div>
         )}
       </div>
     </>

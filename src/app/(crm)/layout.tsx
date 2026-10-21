@@ -14,17 +14,24 @@ export default async function CrmLayout({ children }: LayoutProps<"/">) {
     <div className="app">
       <aside className="sidebar">
         <div className="brand">
-          <div className="mark">🧉</div>
+          <div className="mark">Sr</div>
           <div className="name">CRM SrMATE</div>
         </div>
         <Nav pendentes={count ?? 0} admin={perfil.papel === "admin"} />
         <div className="foot">
-          <div>
+          <div className="avatar">{perfil.nome.trim().charAt(0).toUpperCase()}</div>
+          <div className="quem">
             <b>{perfil.nome}</b>
+            <span>{ROTULO_PAPEL[perfil.papel]}</span>
           </div>
-          <div>{ROTULO_PAPEL[perfil.papel]}</div>
           <form action={sair}>
-            <button>Sair</button>
+            <button aria-label="Sair" title="Sair">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                <path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4" />
+                <path d="M15 8l5 4-5 4" />
+                <path d="M20 12H9" />
+              </svg>
+            </button>
           </form>
         </div>
       </aside>
